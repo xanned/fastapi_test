@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  backend:
+    build: ./fastapi/
+    restart: always
+    container_name: fastapi
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password123
+      - POSTGRES_DB=insurance
+    ports:
+      - 8000:8000
+    volumes:
+      - ./fastapi:/app
+    command: >
+      sh -c "uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:15.3-alpine
+    restart: always
+    container_name: db
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password123
+      - POSTGRES_DB=insurance
+    volumes:
+      - database:/var/lib/postgresql/data/
+
+
+volumes:
+  database:
